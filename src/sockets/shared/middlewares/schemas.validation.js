@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 export const withValidation = (schema, handler) => {
   console.log('withValidation middleware called');
 
-  return (data, socket, callback) => {
+  return async (data, socket, callback) => {
     try {
       // Vérification des paramètres
       if (!schema || typeof schema?.parse !== 'function') {
@@ -43,7 +43,7 @@ export const withValidation = (schema, handler) => {
       const parsedData = schema.parse(data);
 
       // Appel du gestionnaire avec les données validées
-      handler(parsedData, socket, callback);
+      await handler(parsedData, socket, callback);
     } catch (error) {
       if (error instanceof ZodError) {
         console.error('Validation failed:', error.errors);

@@ -1,6 +1,6 @@
 import { withErrorHandling } from '../../shared/middlewares/errors.handler.js';
 import { withValidation } from '../../shared/middlewares/schemas.validation.js';
-import { newTransaction } from './controllers/transaction.js';
+import transactionController from './controllers/transaction.js';
 import { transactionSchema } from './schemas/transactions.schemas.js';
 
 export const setupBanksSockets = (io) => {
@@ -13,7 +13,7 @@ export const setupBanksSockets = (io) => {
       'transaction',
       (data, callback) => {
         const handler = withErrorHandling(
-          withValidation(transactionSchema, newTransaction)
+          withValidation(transactionSchema, transactionController.newTransaction)
         );
     
         // Appel explicite avec `socket`
