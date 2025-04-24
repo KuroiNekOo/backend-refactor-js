@@ -1,0 +1,39 @@
+services:
+  api:
+    container_name: backend_semirp
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 4300:4300
+    depends_on:
+      - db
+    networks:
+      - external3
+
+  db:
+    image: mysql:8.0-oracle
+    container_name: mysql_semirp
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=semirp
+    ports:
+      - 3307:3306
+    networks:
+      - external3
+
+networks:
+  external3:
+    driver: bridge
+
+# docker-compose up -d
+# docker-compose down
+# docker exec -it api sh
+
+# Si le dockerfile est modifie, il faut reconstruire l'image : docker-compose up -d --build
+# Voir les logs d'un conteneur : docker logs -f backend_semirp
+# Voir les conteneurs en cours d'execution : docker ps
+
+# Inspecter le volume d'un conteneur : docker inspect postgres_container | grep Mounts -A 5
+# Arreter les conteneurs en supprimant les donnees : docker-compose down --volumes
