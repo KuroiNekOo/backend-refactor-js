@@ -1,9 +1,9 @@
 import transactionRepository from '../../../../shared/repositories/cache/transaction.repository.js';
 import bankAccountsRepository from '../../../../shared/repositories/db/bankAccounts.repository.js';
 
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 
-const updateCache = new LRU({
+const updateCache = new LRUCache({
   ttl: 2000,      // ⏱️ 2 secondes
   max: 1000,      // Limite d’entrées dans le cache
 });
