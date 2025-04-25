@@ -17,19 +17,31 @@ const transactionRepository = {
     const recipientLockKey = `lock:user:${uuid.recipient}:balance`;
   
     // 🔒 Acquérir les verrous
-    const acquiredSenderLock = await redis.set(senderLockKey, '1', { NX: true, PX: TTL });
+    // const acquiredSenderLock = await redis.set(senderLockKey, '1', { NX: true, PX: TTL });
+
+    // if (!acquiredSenderLock) {
+    //   throw new Error("Une autre transaction est en cours sur le compte émetteur.");
+    // }
+    const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 100); // 5 tentatives, 100ms de délai
 
     if (!acquiredSenderLock) {
-      throw new Error("Une autre transaction est en cours sur le compte émetteur.");
+      throw new Error("Verrou émetteur non acquis après plusieurs tentatives.");
     }
     
-    const acquiredRecipientLock = await redis.set(recipientLockKey, '1', { NX: true, PX: TTL });
-    
+
+    const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 100);
+
     if (!acquiredRecipientLock) {
-      // Libérer le verrou du sender si celui du recipient échoue
       await redis.del(senderLockKey);
-      throw new Error("Une autre transaction est en cours sur le compte bénéficiaire.");
-    }
+      throw new Error("Verrou bénéficiaire non acquis après plusieurs tentatives.");
+    }    
+    // const acquiredRecipientLock = await redis.set(recipientLockKey, '1', { NX: true, PX: TTL });
+    
+    // if (!acquiredRecipientLock) {
+    //   // Libérer le verrou du sender si celui du recipient échoue
+    //   await redis.del(senderLockKey);
+    //   throw new Error("Une autre transaction est en cours sur le compte bénéficiaire.");
+    // }
   
     try {
       // 🔍 Lire les balances
@@ -94,5 +106,15 @@ const transactionRepository = {
   },
 
 };
+
+async function acquireLockWithRetry(key, ttl, retries = 3, delay = 100) {
+  for (let i = 0; i < retries; i++) {
+    const lock = await redis.set(key, '1', { NX: true, PX: ttl });
+    if (lock) return true;
+    await new Promise((res) => setTimeout(res, delay));
+  }
+  return false;
+}
+
 
 export default transactionRepository;
