@@ -22,19 +22,20 @@ const transactionRepository = {
     // if (!acquiredSenderLock) {
     //   throw new Error("Une autre transaction est en cours sur le compte émetteur.");
     // }
-    const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 50); // 5 tentatives, 100ms de délai
+    // const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 50); // 5 tentatives, 100ms de délai
 
-    if (!acquiredSenderLock) {
-      throw new Error("Verrou émetteur non acquis après plusieurs tentatives.");
-    }
+    // if (!acquiredSenderLock) {
+    //   throw new Error("Verrou émetteur non acquis après plusieurs tentatives.");
+    // }
     
 
-    const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 50);
+    // const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 50);
 
-    if (!acquiredRecipientLock) {
-      await redis.del(senderLockKey);
-      throw new Error("Verrou bénéficiaire non acquis après plusieurs tentatives.");
-    }    
+    // if (!acquiredRecipientLock) {
+    //   await redis.del(senderLockKey);
+    //   throw new Error("Verrou bénéficiaire non acquis après plusieurs tentatives.");
+    // }
+
     // const acquiredRecipientLock = await redis.set(recipientLockKey, '1', { NX: true, PX: TTL });
     
     // if (!acquiredRecipientLock) {
@@ -98,10 +99,10 @@ const transactionRepository = {
     } catch (err) {
       throw new Error(`La transaction a échoué : ${err.message}`);
     } finally {
-      await Promise.all([
-        redis.del(senderLockKey),
-        redis.del(recipientLockKey),
-      ]);
+      // await Promise.all([
+      //   redis.del(senderLockKey),
+      //   redis.del(recipientLockKey),
+      // ]);
     }
   },
 
