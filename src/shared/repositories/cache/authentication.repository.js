@@ -43,11 +43,11 @@ const authenticationRepository = {
       )
     );
 
-    return redis.json.set(`session:${uuid}`, '.', sanitizedSession);
+    return redis.json.set(`player:${uuid}`, '.', sanitizedSession);
   },
 
   async deleteStoreSession(uuid) {
-    return redis.del(`session:${uuid}`);
+    return redis.del(`player:${uuid}`);
   },
 
 };

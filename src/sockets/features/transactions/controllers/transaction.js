@@ -1,68 +1,99 @@
 import transactionRepository from '../../../../shared/repositories/cache/transaction.repository.js';
 import bankAccountsRepository from '../../../../shared/repositories/db/bankAccounts.repository.js';
 
-import { LRUCache } from 'lru-cache';
+const timeouts = {};  // Un objet pour stocker les timeoutId
 
-const updateCache = new LRUCache({
-  ttl: 2000,      // ⏱️ 2 secondes
-  max: 1000,      // Limite d’entrées dans le cache
-});
+// Mettre à jour les comptes en base une fois le délai de 2s écoulé
+function processUpdates(params) {
 
-// Renvoie true si on peut faire l’update maintenant
-function canUpdate(rib) {
-  return !updateCache.has(rib);
-}
+  const {  ribSender, ribRecipient, balanceSender, balanceRecipient } = params;
 
-// Marque un rib comme mis à jour
-function markUpdated(rib) {
-  updateCache.set(rib, true); // expire tout seul dans 2s
+  const labelSender = 'SENDER';
+  const labelRecipient = 'RECIPIENT';
+
+  const startTime = new Date();
+  console.log('Heure de début de la mise à jour:', startTime.toLocaleTimeString());
+
+  console.log(`[UPDATE] [${labelSender}] Mise à jour pour ${ribSender}`);
+  bankAccountsRepository.updateBankAccount(ribSender, { balance: balanceSender }).catch((err) => {
+    console.error(`[ERROR] Erreur updateBankAccount pour ${ribSender}:`, err);
+  });
+
+  console.log(`[UPDATE] [${labelRecipient}] Mise à jour pour ${ribRecipient}`);
+  bankAccountsRepository.updateBankAccount(ribRecipient, { balance: balanceRecipient }).catch((err) => {
+    console.error(`[ERROR] Erreur updateBankAccount pour ${ribRecipient}:`, err);
+  });
+
 }
 
 const transactionController = {
 
+  // async newTransaction(data, _, callback) {
+
+  //   const result = await transactionRepository.paymentByRIB(data);
+    
+  //   // Fonction qui essaie d'enregistrer un RIB en cache
+  //   const tryUpdate = (rib, label) => {
+  //     // console.log(`[ATTENTE] [${label}] RIB ${rib} ajouté pour mise à jour.`);
+  //     return;
+  //   };
+
+  //   tryUpdate(result.sender.rib, 'SENDER');
+  //   tryUpdate(result.recipient.rib, 'RECIPIENT');
+
+  //   // Générer une clé unique en fonction du ribSender et ribRecipient
+  //   const key = `${result.sender.rib}-${result.recipient.rib}`;
+
+  //   // Si un timeout existe déjà pour ce couple, on le réinitialise
+  //   if (timeouts[key]) {
+  //     clearTimeout(timeouts[key]);  // Annuler le précédent timer
+  //   }
+    
+  //   // Définir un nouveau timer de 2 secondes
+  //   const timeoutId = setTimeout(async () => {
+  //     // Récupérer les deux comptes bancaires de redis
+  //     const { balance: senderBalance } = await transactionRepository.getBalanceByRIB({
+  //       uuid: data.uuid.sender,
+  //       rib: data.sender,
+  //     });
+
+  //     const { balance: recipientBalance } = await transactionRepository.getBalanceByRIB({
+  //       uuid: data.uuid.recipient,
+  //       rib: data.recipient,
+  //     });
+
+  //     processUpdates({
+  //       ribSender: data.sender,
+  //       ribRecipient: data.recipient,
+  //       balanceSender: senderBalance[0],
+  //       balanceRecipient: recipientBalance[0],
+  //     });  // Effectuer l'senderData?.[0] après 2s d'attente
+  //   }, 2000);
+
+  //   // Stocker le timeoutId dans l'objet avec la clé spécifique
+  //   timeouts[key] = timeoutId;
+
+  //   // Répondre avec succès (ça peut être ajusté si besoin)
+  //   callback({ success: true });
+  // },
+
   async newTransaction(data, _, callback) {
+    try {
+      await redis.xAdd('transactions:stream', '*', {
+        id: data.id,
+        uuidSender: data.uuid.sender,
+        uuidRecipient: data.uuid.recipient,
+        ribSender: data.sender,
+        ribRecipient: data.recipient,
+        amount: data.amount,
+        timestamp: Date.now(),
+      });
 
-    const result = await transactionRepository.paymentByRIB(data);
-  
-    const tryUpdate = (rib, balance, label) => {
-      if (canUpdate(rib)) {
-        bankAccountsRepository.updateBankAccount(rib, { balance }).catch((err) => {
-          console.error(`[${label}] Erreur updateBankAccount :`, err);
-        });
-        markUpdated(rib);
-      } else {
-        console.log(`[SKIP] Update ignoré pour ${rib} (déjà fait récemment)`);
-      }
-    };
-
-    tryUpdate(result.sender.rib, result.sender.balance, 'SENDER');
-    tryUpdate(result.recipient.rib, result.recipient.balance, 'RECIPIENT');
-
-    // -- Gestion d'une erreur non bloquante (promesse non await) --
-    // Si la transaction échoue, répondre avec une erreur via le callback
-    // if (shouldUpdate(result.sender.rib)) {
-
-    //   bankAccountsRepository.updateBankAccount(
-    //     result.sender.rib, { balance: result.sender.balance },
-    //   ).catch((err) => {
-    //     console.error('Erreur dans updateBankAccount (non bloquante) :', err);
-    //   });
-
-    // }
-
-    // if (shouldUpdate(result.recipient.rib)) {
-  
-    //   bankAccountsRepository.updateBankAccount(
-    //     result.recipient.rib, { balance: result.recipient.balance },
-    //   ).catch((err) => {
-    //     console.error('Erreur dans updateBankAccount (non bloquante) :', err);
-    //   });
-  
-    // }
-
-    // Si tout se passe bien, répondre avec un succès via le callback
-    callback({ success: true });
-  
+      callback({ success: true });
+    } catch (err) {
+      console.error('[XADD ERROR]', err);
+      callback({ success: false, error: err.message });
+    }
   },
 
 };

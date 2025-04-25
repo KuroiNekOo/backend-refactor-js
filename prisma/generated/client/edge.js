@@ -483,7 +483,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/xam42/Documents/code/semirp/brjs/prisma/generated/client",
+      "value": "/usr/src/app/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -505,11 +505,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/xam42/Documents/code/semirp/brjs/prisma/schema.prisma",
+    "sourceFilePath": "/usr/src/app/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../..",
   "clientVersion": "6.6.0",
@@ -518,7 +519,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
-  "postinstall": true,
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
