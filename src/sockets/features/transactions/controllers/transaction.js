@@ -3,18 +3,18 @@ import bankAccountsRepository from '../../../../shared/repositories/db/bankAccou
 
 const lastUpdateTimestamps = new Map();
 
-const transactionController = {
+function shouldUpdate(rib) {
+  const now = Date.now();
+  const lastUpdate = lastUpdateTimestamps.get(rib);
+  if (lastUpdate && (now - lastUpdate < 1000)) {
+    console.log(`[IGNORE] Transaction ignored for ${rib} to avoid spamming.`);
+    return false;
+  }
+  lastUpdateTimestamps.set(rib, now);
+  return true;
+}
 
-  shouldUpdate(rib) {
-    const now = Date.now();
-    const lastUpdate = lastUpdateTimestamps.get(rib);
-    if (lastUpdate && (now - lastUpdate < 1000)) {
-      console.log(`[IGNORE] Transaction ignored for ${rib} to avoid spamming.`);
-      return false;
-    }
-    lastUpdateTimestamps.set(rib, now);
-    return true;
-  },
+const transactionController = {
 
   async newTransaction(data, _, callback) {
 
