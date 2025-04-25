@@ -1,7 +1,7 @@
 import { withErrorHandling } from '../../shared/middlewares/errors.handler.js';
 import { withValidation } from '../../shared/middlewares/schemas.validation.js';
 import authenticationController from './controllers/authentication.js';
-import { signupStep1Schema, signupStep2Schema } from './schemas/authentication.schemas.js';
+import { changePasswordStep1Schema, changePasswordStep2Schema, signinSchema, signoutSchema, signupStep1Schema, signupStep2Schema } from './schemas/authentication.schemas.js';
 
 export const setupAuthenticationSockets = (io) => {
   io.of('/authentication').on('connection', (socket) => {
@@ -25,6 +25,54 @@ export const setupAuthenticationSockets = (io) => {
       (data, callback) => {
         const handler = withErrorHandling(
           withValidation(signupStep2Schema, authenticationController.signupStep2)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'changepassword:step1',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(changePasswordStep1Schema, authenticationController.changePasswordStep1)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'changepassword:step2',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(changePasswordStep2Schema, authenticationController.changePasswordStep2)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'signin',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(signinSchema, authenticationController.signin)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'signout',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(signoutSchema, authenticationController.signout)
         );
     
         // Appel explicite avec `socket`

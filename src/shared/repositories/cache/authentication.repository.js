@@ -10,29 +10,44 @@ const TTL = 300;
 
 const authenticationRepository = {
 
-  async generateCode(uuid) {
+  async generateCode(prefix, uuid) {
     // Génération d'un code avec randexp
     const code = new RandExp(AUTH_CODE_REGEX).gen();
 
     // Stockage du code dans Redis avec un TTL
-    await redis.set(`signup:code:${uuid}`, code, {
+    await redis.set(`${prefix}:code:${uuid}`, code, {
       EX: TTL,
     });
 
     return code;
   },
 
-  async checkCode(uuid, code) {
+  async checkCode(prefix, uuid, code) {
     // Vérification du code dans Redis
-    const storedCode = await redis.get(`signup:code:${uuid}`);
+    const storedCode = await redis.get(`${prefix}:code:${uuid}`);
 
     if (storedCode === code) {
       // Si le code est correct, suppression de l'entrée dans Redis
-      await redis.del(`signup:code:${uuid}`);
+      await redis.del(`${prefix}:code:${uuid}`);
       return true;
     }
 
     return false;
+  },
+
+  async storeSession(uuid, session) {
+    // Convertir toutes les dates en chaînes ISO
+    const sanitizedSession = JSON.parse(
+      JSON.stringify(session, (_, value) =>
+        value instanceof Date ? value.toISOString() : value
+      )
+    );
+
+    return redis.json.set(`session:${uuid}`, '.', sanitizedSession);
+  },
+
+  async deleteStoreSession(uuid) {
+    return redis.del(`session:${uuid}`);
   },
 
 };

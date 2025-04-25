@@ -18,10 +18,17 @@ const transactionRepository = {
   
     // 🔒 Acquérir les verrous
     const acquiredSenderLock = await redis.set(senderLockKey, '1', { NX: true, PX: TTL });
+
+    if (!acquiredSenderLock) {
+      throw new Error("Une autre transaction est en cours sur le compte émetteur.");
+    }
+    
     const acquiredRecipientLock = await redis.set(recipientLockKey, '1', { NX: true, PX: TTL });
-  
-    if (!acquiredSenderLock || !acquiredRecipientLock) {
-      throw new Error("Une autre transaction est en cours, veuillez réessayer.");
+    
+    if (!acquiredRecipientLock) {
+      // Libérer le verrou du sender si celui du recipient échoue
+      await redis.del(senderLockKey);
+      throw new Error("Une autre transaction est en cours sur le compte bénéficiaire.");
     }
   
     try {
