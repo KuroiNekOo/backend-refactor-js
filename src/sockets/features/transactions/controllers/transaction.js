@@ -9,6 +9,7 @@ const transactionController = {
     const now = Date.now();
     const lastUpdate = lastUpdateTimestamps.get(rib);
     if (lastUpdate && (now - lastUpdate < 1000)) {
+      console.log(`[IGNORE] Transaction ignored for ${rib} to avoid spamming.`);
       return false;
     }
     lastUpdateTimestamps.set(rib, now);
