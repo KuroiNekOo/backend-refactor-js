@@ -6,10 +6,13 @@ const lastUpdateTimestamps = new Map();
 function shouldUpdate(rib) {
   const now = Date.now();
   const lastUpdate = lastUpdateTimestamps.get(rib);
-  if (lastUpdate && (now - lastUpdate < 1000)) {
-    console.log(`[IGNORE] Transaction ignored for ${rib} to avoid spamming.`);
+
+  // Vérifie s'il y a eu une mise à jour dans les 2 dernières secondes (2000 ms)
+  if (lastUpdate && (now - lastUpdate < 2000)) {
+    console.log(`[IGNORE] Transaction ignored for ${rib} (last update was ${now - lastUpdate}ms ago).`);
     return false;
   }
+
   lastUpdateTimestamps.set(rib, now);
   return true;
 }
