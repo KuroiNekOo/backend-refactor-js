@@ -22,14 +22,14 @@ const transactionRepository = {
     // if (!acquiredSenderLock) {
     //   throw new Error("Une autre transaction est en cours sur le compte émetteur.");
     // }
-    const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 20); // 5 tentatives, 100ms de délai
+    const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 50); // 5 tentatives, 100ms de délai
 
     if (!acquiredSenderLock) {
       throw new Error("Verrou émetteur non acquis après plusieurs tentatives.");
     }
     
 
-    const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 20);
+    const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 50);
 
     if (!acquiredRecipientLock) {
       await redis.del(senderLockKey);
@@ -111,6 +111,7 @@ async function acquireLockWithRetry(key, ttl, retries = 3, delay = 100) {
   for (let i = 0; i < retries; i++) {
     const lock = await redis.set(key, '1', { NX: true, PX: ttl });
     if (lock) return true;
+    console.log(i);
     await new Promise((res) => setTimeout(res, delay));
   }
   return false;
