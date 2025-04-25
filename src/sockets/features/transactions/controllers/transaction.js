@@ -2,8 +2,6 @@ import transactionRepository from '../../../../shared/repositories/cache/transac
 import bankAccountsRepository from '../../../../shared/repositories/db/bankAccounts.repository.js';
 
 import LRU from 'lru-cache';
-import transactionRepository from '../../../../shared/repositories/cache/transaction.repository.js';
-import bankAccountsRepository from '../../../../shared/repositories/db/bankAccounts.repository.js';
 
 const updateCache = new LRU({
   ttl: 2000,      // ⏱️ 2 secondes
