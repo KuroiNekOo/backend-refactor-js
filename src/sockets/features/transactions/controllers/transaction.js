@@ -2,14 +2,31 @@ import transactionRepository from '../../../../shared/repositories/cache/transac
 import bankAccountsRepository from '../../../../shared/repositories/db/bankAccounts.repository.js';
 
 const lastUpdateTimestamps = new Map();
+const pendingTimeouts = new Map();
+
+function scheduleDeferredUpdate(rib, balance, updateFn) {
+  if (pendingTimeouts.has(rib)) return; // On évite de reprogrammer plusieurs fois
+
+  const delay = 2000 - (Date.now() - lastUpdateTimestamps.get(rib));
+
+  const timeout = setTimeout(() => {
+    updateFn().catch((err) => {
+      console.error(`[DEFERRED] Erreur updateBankAccount pour ${rib} :`, err);
+    });
+
+    lastUpdateTimestamps.set(rib, Date.now());
+    pendingTimeouts.delete(rib);
+  }, delay);
+
+  pendingTimeouts.set(rib, timeout);
+}
 
 function shouldUpdate(rib) {
   const now = Date.now();
   const lastUpdate = lastUpdateTimestamps.get(rib);
 
-  // Vérifie s'il y a eu une mise à jour dans les 2 dernières secondes (2000 ms)
   if (lastUpdate && (now - lastUpdate < 2000)) {
-    console.log(`[IGNORE] Transaction ignored for ${rib} (last update was ${now - lastUpdate}ms ago).`);
+    console.log(`[DEFERRED] Trop récent pour ${rib}, on reporte l'update.`);
     return false;
   }
 
@@ -23,27 +40,51 @@ const transactionController = {
 
     const result = await transactionRepository.paymentByRIB(data);
   
-    // -- Gestion d'une erreur non bloquante (promesse non await) --
-    // Si la transaction échoue, répondre avec une erreur via le callback
+    const updateSender = () => bankAccountsRepository.updateBankAccount(
+      result.sender.rib, { balance: result.sender.balance }
+    );
+
+    const updateRecipient = () => bankAccountsRepository.updateBankAccount(
+      result.recipient.rib, { balance: result.recipient.balance }
+    );
+
     if (shouldUpdate(result.sender.rib)) {
-
-      bankAccountsRepository.updateBankAccount(
-        result.sender.rib, { balance: result.sender.balance },
-      ).catch((err) => {
-        console.error('Erreur dans updateBankAccount (non bloquante) :', err);
+      updateSender().catch((err) => {
+        console.error('Erreur updateBankAccount (sender) :', err);
       });
-
+    } else {
+      scheduleDeferredUpdate(result.sender.rib, result.sender.balance, updateSender);
     }
 
     if (shouldUpdate(result.recipient.rib)) {
-  
-      bankAccountsRepository.updateBankAccount(
-        result.recipient.rib, { balance: result.recipient.balance },
-      ).catch((err) => {
-        console.error('Erreur dans updateBankAccount (non bloquante) :', err);
+      updateRecipient().catch((err) => {
+        console.error('Erreur updateBankAccount (recipient) :', err);
       });
-  
+    } else {
+      scheduleDeferredUpdate(result.recipient.rib, result.recipient.balance, updateRecipient);
     }
+
+    // -- Gestion d'une erreur non bloquante (promesse non await) --
+    // Si la transaction échoue, répondre avec une erreur via le callback
+    // if (shouldUpdate(result.sender.rib)) {
+
+    //   bankAccountsRepository.updateBankAccount(
+    //     result.sender.rib, { balance: result.sender.balance },
+    //   ).catch((err) => {
+    //     console.error('Erreur dans updateBankAccount (non bloquante) :', err);
+    //   });
+
+    // }
+
+    // if (shouldUpdate(result.recipient.rib)) {
+  
+    //   bankAccountsRepository.updateBankAccount(
+    //     result.recipient.rib, { balance: result.recipient.balance },
+    //   ).catch((err) => {
+    //     console.error('Erreur dans updateBankAccount (non bloquante) :', err);
+    //   });
+  
+    // }
 
     // Si tout se passe bien, répondre avec un succès via le callback
     callback({ success: true });
