@@ -22,14 +22,14 @@ const transactionRepository = {
     // if (!acquiredSenderLock) {
     //   throw new Error("Une autre transaction est en cours sur le compte émetteur.");
     // }
-    const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 100); // 5 tentatives, 100ms de délai
+    const acquiredSenderLock = await acquireLockWithRetry(senderLockKey, TTL, 5, 20); // 5 tentatives, 100ms de délai
 
     if (!acquiredSenderLock) {
       throw new Error("Verrou émetteur non acquis après plusieurs tentatives.");
     }
     
 
-    const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 100);
+    const acquiredRecipientLock = await acquireLockWithRetry(recipientLockKey, TTL, 5, 20);
 
     if (!acquiredRecipientLock) {
       await redis.del(senderLockKey);
