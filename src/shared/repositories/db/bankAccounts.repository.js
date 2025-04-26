@@ -83,7 +83,7 @@ const bankAccountsRepository = {
       throw new Error('Missing parameters: senderRib, recipientRib, or amount');
     }
 
-    const maxRetries = 3; // On tente 3 fois max
+    const maxRetries = 3; // Nombre maximum de tentatives
     let attempt = 0;
 
     while (attempt < maxRetries) {
@@ -91,7 +91,7 @@ const bankAccountsRepository = {
         return await prisma.$transaction(async (prisma) => {
           await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
 
-          // Verrouiller les deux comptes en UNE SEULE REQUETE
+          // Verrouiller les deux comptes en une seule requête
           const accountsResult = await prisma.$queryRaw`
             SELECT * FROM \`bank_account\`
             WHERE id IN (${senderRib}, ${recipientRib})
@@ -123,14 +123,14 @@ const bankAccountsRepository = {
           return true;
         });
       } catch (error) {
-        // Si c'est une erreur de type "Unable to start a transaction", on retry
         if (error.code === 'P2028') {
-          console.warn(`Tentative ${attempt + 1} échouée (P2028), on retente...`);
           attempt++;
-          await new Promise(resolve => setTimeout(resolve, 100)); // Attendre 100ms avant retry
+          const waitTime = 100 * attempt; // Temps d'attente augmente à chaque tentative
+          console.warn(`Tentative ${attempt} échouée (P2028), on attend ${waitTime}ms avant retry...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
         } else {
           console.error('Erreur réelle dans transferFunds:', error.message);
-          throw error; // autre erreur → on stoppe
+          throw error;
         }
       }
     }
