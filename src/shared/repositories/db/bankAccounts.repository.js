@@ -19,18 +19,20 @@ const bankAccountsRepository = {
         await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
 
         // Verrouiller le compte du sender
-        const senderAccount = await prisma.$queryRaw`
-          SELECT * FROM "bank_account"
+          const senderAccountResult = await prisma.$queryRaw`
+          SELECT * FROM \`bank_account\`
           WHERE id = ${senderRib}
           FOR UPDATE;
         `;
+        const senderAccount = senderAccountResult?.[0];
 
         // Verrouiller le compte du recipient
-        const recipientAccount = await prisma.$queryRaw`
-          SELECT * FROM "bank_account"
+          const recipientAccountResult = await prisma.$queryRaw`
+          SELECT * FROM \`bank_account\`
           WHERE id = ${recipientRib}
           FOR UPDATE;
         `;
+        const recipientAccount = recipientAccountResult?.[0];
 
         // Vérifications
         if (!senderAccount || senderAccount.balance < amount) {
