@@ -1,74 +1,142 @@
-import { prisma } from '../../../config/database.js'; // Prisma Client
+// import { prisma } from '../../../config/database.js'; // Prisma Client
 
-// Repository pour gérer les utilisateurs
+// // Repository pour gérer les utilisateurs
+// const bankAccountsRepository = {
+
+//   async transferFunds(
+//     { sender: senderRib, recipient: recipientRib, amount }
+//   ) {
+//     if (!senderRib || !recipientRib || !amount) {
+//       throw new Error('Missing parameters: senderRib, recipientRib, or amount');
+//     }
+
+//     try {
+//       return prisma.$transaction(async (prisma) => {
+//         // Configurer un délai d'attente pour les verrous (PostgreSQL uniquement)
+//         // await prisma.$executeRaw`SET LOCAL lock_timeout = '5s';`;
+
+//         // await prisma.$executeRaw`SET SESSION innodb_lock_wait_timeout = 1`;
+//         await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
+
+//         // Verrouiller le compte du sender
+//           const senderAccountResult = await prisma.$queryRaw`
+//           SELECT * FROM \`bank_account\`
+//           WHERE id = ${senderRib}
+//           FOR UPDATE;
+//         `;
+//         const senderAccount = senderAccountResult?.[0];
+
+//         // Verrouiller le compte du recipient
+//           const recipientAccountResult = await prisma.$queryRaw`
+//           SELECT * FROM \`bank_account\`
+//           WHERE id = ${recipientRib}
+//           FOR UPDATE;
+//         `;
+//         const recipientAccount = recipientAccountResult?.[0];
+
+//         // Vérifications
+//         if (!senderAccount || senderAccount.balance < amount) {
+//           throw new Error('Insufficient funds or sender account does not exist.');
+//         }
+
+//         if (!recipientAccount) {
+//           throw new Error('Recipient account does not exist.');
+//         }
+
+//         // Mettre à jour le solde du sender
+//         await prisma.bankAccount.update({
+//           where: { id: senderRib },
+//           data: { balance: senderAccount.balance - amount },
+//         });
+
+//         // Mettre à jour le solde du recipient
+//         await prisma.bankAccount.update({
+//           where: { id: recipientRib },
+//           data: { balance: recipientAccount.balance + amount },
+//         });
+
+//         return true;
+//       });
+//     } catch (error) {
+//       // Vérifier si l'erreur est liée à un verrouillage
+//       if (error.code === '55P03') { // PostgreSQL error code for lock timeout
+//         console.error('Conflit de verrouillage détecté :', error.message);
+//       } else if (error.code === 'P2028') {
+//         console.error('Toutes les connexions du pool en utilisation :', error.message);
+//       } else {
+//         console.error('Erreur lors de la transaction :', error.message);
+//       }
+//       throw error; // Relancer l'erreur pour la gestion en amont
+//     }
+
+//   },
+
+// };
+
+// export default bankAccountsRepository;
+
+import { prisma } from '../../../config/database.js';
+
 const bankAccountsRepository = {
-
-  async transferFunds(
-    { sender: senderRib, recipient: recipientRib, amount }
-  ) {
+  async transferFunds({ sender: senderRib, recipient: recipientRib, amount }) {
     if (!senderRib || !recipientRib || !amount) {
       throw new Error('Missing parameters: senderRib, recipientRib, or amount');
     }
 
-    try {
-      return prisma.$transaction(async (prisma) => {
-        // Configurer un délai d'attente pour les verrous (PostgreSQL uniquement)
-        // await prisma.$executeRaw`SET LOCAL lock_timeout = '5s';`;
+    const maxRetries = 3; // On tente 3 fois max
+    let attempt = 0;
 
-        // await prisma.$executeRaw`SET SESSION innodb_lock_wait_timeout = 1`;
-        await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
+    while (attempt < maxRetries) {
+      try {
+        return await prisma.$transaction(async (prisma) => {
+          await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
 
-        // Verrouiller le compte du sender
-          const senderAccountResult = await prisma.$queryRaw`
-          SELECT * FROM \`bank_account\`
-          WHERE id = ${senderRib}
-          FOR UPDATE;
-        `;
-        const senderAccount = senderAccountResult?.[0];
+          // Verrouiller les deux comptes en UNE SEULE REQUETE
+          const accountsResult = await prisma.$queryRaw`
+            SELECT * FROM \`bank_account\`
+            WHERE id IN (${senderRib}, ${recipientRib})
+            FOR UPDATE;
+          `;
 
-        // Verrouiller le compte du recipient
-          const recipientAccountResult = await prisma.$queryRaw`
-          SELECT * FROM \`bank_account\`
-          WHERE id = ${recipientRib}
-          FOR UPDATE;
-        `;
-        const recipientAccount = recipientAccountResult?.[0];
+          const senderAccount = accountsResult.find(acc => acc.id === senderRib);
+          const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
 
-        // Vérifications
-        if (!senderAccount || senderAccount.balance < amount) {
-          throw new Error('Insufficient funds or sender account does not exist.');
-        }
+          if (!senderAccount || senderAccount.balance < amount) {
+            throw new Error('Insufficient funds or sender account does not exist.');
+          }
 
-        if (!recipientAccount) {
-          throw new Error('Recipient account does not exist.');
-        }
+          if (!recipientAccount) {
+            throw new Error('Recipient account does not exist.');
+          }
 
-        // Mettre à jour le solde du sender
-        await prisma.bankAccount.update({
-          where: { id: senderRib },
-          data: { balance: senderAccount.balance - amount },
+          // Mettre à jour les soldes
+          await prisma.bankAccount.update({
+            where: { id: senderRib },
+            data: { balance: senderAccount.balance - amount },
+          });
+
+          await prisma.bankAccount.update({
+            where: { id: recipientRib },
+            data: { balance: recipientAccount.balance + amount },
+          });
+
+          return true;
         });
-
-        // Mettre à jour le solde du recipient
-        await prisma.bankAccount.update({
-          where: { id: recipientRib },
-          data: { balance: recipientAccount.balance + amount },
-        });
-
-        return true;
-      });
-    } catch (error) {
-      // Vérifier si l'erreur est liée à un verrouillage
-      if (error.code === '55P03') { // PostgreSQL error code for lock timeout
-        console.error('Conflit de verrouillage détecté :', error.message);
-      } else {
-        console.error('Erreur lors de la transaction :', error.message);
+      } catch (error) {
+        // Si c'est une erreur de type "Unable to start a transaction", on retry
+        if (error.code === 'P2028') {
+          console.warn(`Tentative ${attempt + 1} échouée (P2028), on retente...`);
+          attempt++;
+          await new Promise(resolve => setTimeout(resolve, 100)); // Attendre 100ms avant retry
+        } else {
+          console.error('Erreur réelle dans transferFunds:', error.message);
+          throw error; // autre erreur → on stoppe
+        }
       }
-      throw error; // Relancer l'erreur pour la gestion en amont
     }
 
+    throw new Error('Échec du transfert après plusieurs tentatives.');
   },
-
 };
 
 export default bankAccountsRepository;
