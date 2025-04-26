@@ -8,7 +8,12 @@ export const transactionSchema = z.object({
     sender: z.string().uuid(),
     recipient: z.string().uuid(),
   }),
-  sender: z.string().regex(RIB_REGEX),
-  recipient: z.string().regex(RIB_REGEX),
-  amount: z.number().positive(),
+  sender: z.object({
+    id: z.string().regex(RIB_REGEX),
+    newSolde: z.number().positive(),
+  }),
+  recipient: z.object({
+    id: z.string().regex(RIB_REGEX),
+    newSolde: z.number().positive(),
+  }),
 }).required();

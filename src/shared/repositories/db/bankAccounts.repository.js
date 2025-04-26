@@ -78,9 +78,12 @@
 import { prisma } from '../../../config/database.js';
 
 const bankAccountsRepository = {
-  async transferFunds({ sender: senderRib, recipient: recipientRib, amount }) {
-    if (!senderRib || !recipientRib || !amount) {
-      throw new Error('Missing parameters: senderRib, recipientRib, or amount');
+  async transferFunds({ sender, recipient }) {
+    const { id: senderRib, newSolde: senderSolde } = sender;
+    const { id: recipientRib, newSolde: recipientSolde } = recipient;
+
+    if (!senderRib || !recipientRib || !senderSolde || !recipientSolde) {
+      throw new Error('Missing parameters: senderRib, recipientRib, senderSolde, or recipientSolde');
     }
 
     const maxRetries = 3; // Nombre maximum de tentatives
@@ -101,8 +104,8 @@ const bankAccountsRepository = {
           const senderAccount = accountsResult.find(acc => acc.id === senderRib);
           const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
 
-          if (!senderAccount || senderAccount.balance < amount) {
-            throw new Error('Insufficient funds or sender account does not exist.');
+          if (!senderAccount) {
+            throw new Error('Sender account does not exist.');
           }
 
           if (!recipientAccount) {
@@ -112,12 +115,12 @@ const bankAccountsRepository = {
           // Mettre à jour les soldes
           await prisma.bankAccount.update({
             where: { id: senderRib },
-            data: { balance: senderAccount.balance - amount },
+            data: { balance: senderSolde },
           });
 
           await prisma.bankAccount.update({
             where: { id: recipientRib },
-            data: { balance: recipientAccount.balance + amount },
+            data: { balance: recipientSolde },
           });
 
           return true;
