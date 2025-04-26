@@ -82,64 +82,54 @@ const bankAccountsRepository = {
     const { id: senderRib, newSolde: senderSolde } = sender;
     const { id: recipientRib, newSolde: recipientSolde } = recipient;
 
-    if (!senderRib || !recipientRib || !senderSolde || !recipientSolde) {
+    if (!senderRib || !recipientRib || senderSolde == null || recipientSolde == null) {
       throw new Error('Missing parameters: senderRib, recipientRib, senderSolde, or recipientSolde');
     }
 
-    const maxRetries = 3; // Nombre maximum de tentatives
-    let attempt = 0;
+    try {
+      return await prisma.$transaction(async (prisma) => {
+        await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
 
-    while (attempt < maxRetries) {
-      try {
-        return await prisma.$transaction(async (prisma) => {
-          await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
+        const accountsResult = await prisma.$queryRaw`
+          SELECT * FROM \`bank_account\`
+          WHERE id IN (${senderRib}, ${recipientRib})
+          FOR UPDATE;
+        `;
 
-          // Verrouiller les deux comptes en une seule requête
-          const accountsResult = await prisma.$queryRaw`
-            SELECT * FROM \`bank_account\`
-            WHERE id IN (${senderRib}, ${recipientRib})
-            FOR UPDATE;
-          `;
+        const senderAccount = accountsResult.find(acc => acc.id === senderRib);
+        const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
 
-          const senderAccount = accountsResult.find(acc => acc.id === senderRib);
-          const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
-
-          if (!senderAccount) {
-            throw new Error('Sender account does not exist.');
-          }
-
-          if (!recipientAccount) {
-            throw new Error('Recipient account does not exist.');
-          }
-
-          // Mettre à jour les soldes
-          await prisma.bankAccount.update({
-            where: { id: senderRib },
-            data: { balance: senderSolde },
-          });
-
-          await prisma.bankAccount.update({
-            where: { id: recipientRib },
-            data: { balance: recipientSolde },
-          });
-
-          return true;
-        });
-      } catch (error) {
-        if (error.code === 'P2028') {
-          attempt++;
-          const waitTime = 100 * attempt; // Temps d'attente augmente à chaque tentative
-          console.warn(`Tentative ${attempt} échouée (P2028), on attend ${waitTime}ms avant retry...`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-        } else {
-          console.error('Erreur réelle dans transferFunds:', error.message);
-          throw error;
+        if (!senderAccount) {
+          throw new Error('Sender account does not exist.');
         }
+
+        if (!recipientAccount) {
+          throw new Error('Recipient account does not exist.');
+        }
+
+        await prisma.bankAccount.update({
+          where: { id: senderRib },
+          data: { balance: senderSolde },
+        });
+
+        await prisma.bankAccount.update({
+          where: { id: recipientRib },
+          data: { balance: recipientSolde },
+        });
+
+        return true;
+      });
+    } catch (error) {
+      if (error.code === 'P2028') {
+        console.warn(`Transaction impossible : les comptes sont déjà verrouillés.`);
+        throw new Error('Transaction already in progress for these accounts, please retry later.');
+      } else {
+        console.error('Erreur réelle dans transferFunds:', error.message);
+        throw error;
       }
     }
-
-    throw new Error('Échec du transfert après plusieurs tentatives.');
   },
 };
 
 export default bankAccountsRepository;
+
