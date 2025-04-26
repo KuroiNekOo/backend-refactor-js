@@ -1,7 +1,7 @@
 import { withErrorHandling } from '../../shared/middlewares/errors.handler.js';
 import { withValidation } from '../../shared/middlewares/schemas.validation.js';
 import transactionController from './controllers/transaction.js';
-import { transactionSchema } from './schemas/transactions.schemas.js';
+import { multiBankAccountSchema, transactionSchema } from './schemas/transactions.schemas.js';
 
 export const setupBanksSockets = (io) => {
   io.of('/banks').on('connection', (socket) => {
@@ -14,6 +14,18 @@ export const setupBanksSockets = (io) => {
       (data, callback) => {
         const handler = withErrorHandling(
           withValidation(transactionSchema, transactionController.newTransaction)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'transaction2',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(multiBankAccountSchema, transactionController.newTransaction2)
         );
     
         // Appel explicite avec `socket`

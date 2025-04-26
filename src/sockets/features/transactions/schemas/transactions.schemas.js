@@ -17,3 +17,11 @@ export const transactionSchema = z.object({
     newSolde: z.number().positive(),
   }),
 }).required();
+
+export const multiBankAccountSchema = z.object({
+  id: z.string().uuid(),
+  accounts: z.array(z.object({
+    id: z.string().regex(RIB_REGEX),
+    newSolde: z.number().positive(),
+  })),
+}).required();

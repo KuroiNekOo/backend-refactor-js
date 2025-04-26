@@ -12,6 +12,14 @@ const transactionController = {
     callback({ success: true });
   },
 
+  async newTransaction2(data, _, callback) {
+    bankAccountsRepository.transferFunds2(data).catch((err) => {
+      console.error('Erreur dans updateBankAccount (non bloquante) :', err);
+    });
+
+    callback({ success: true });
+  },
+
 };
 
 export default transactionController;
