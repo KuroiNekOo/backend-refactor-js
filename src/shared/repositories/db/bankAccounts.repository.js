@@ -13,7 +13,10 @@ const bankAccountsRepository = {
     try {
       return prisma.$transaction(async (prisma) => {
         // Configurer un délai d'attente pour les verrous (PostgreSQL uniquement)
-        await prisma.$executeRaw`SET LOCAL lock_timeout = '5s';`;
+        // await prisma.$executeRaw`SET LOCAL lock_timeout = '5s';`;
+
+        // await prisma.$executeRaw`SET SESSION innodb_lock_wait_timeout = 1`;
+        await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 5;`);
 
         // Verrouiller le compte du sender
         const senderAccount = await prisma.$queryRaw`
