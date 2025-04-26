@@ -62,47 +62,49 @@ const bankAccountsRepository = {
       throw new Error('Accounts array is required and cannot be empty.');
     }
 
-    try {
-      return await prisma.$transaction(async (prisma) => {
-        await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
+    // Résultats des mises à jour
+    const successfulUpdates = [];
+    const failedAccounts = [];
 
-        const accountIds = accounts.map(acc => acc.id);
+    // Boucle sur chaque compte et traitement séquentiel
+    for (const { id, newSolde } of accounts) {
+      try {
+        // Effectuer une transaction pour chaque compte
+        const result = await prisma.$transaction(async (prisma) => {
+          await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
 
-        const accountsResult = await prisma.$queryRaw`
-          SELECT * FROM \`bank_account\`
-          WHERE id IN (${prisma.join(accountIds)})
-          FOR UPDATE;
-        `;
+          // Vérifier que le compte existe
+          const accountResult = await prisma.$queryRaw`
+            SELECT * FROM \`bank_account\`
+            WHERE id = ${id}
+            FOR UPDATE;
+          `;
 
-        // Vérifier que tous les comptes existent
-        for (const { id } of accounts) {
-          if (!accountsResult.find(acc => acc.id === id)) {
+          if (!accountResult || accountResult.length === 0) {
             throw new Error(`Account with RIB ${id} does not exist.`);
           }
-        }
 
-        // Mettre à jour tous les comptes
-        for (const { id, newSolde } of accounts) {
+          // Mettre à jour le solde du compte
           await prisma.bankAccount.update({
             where: { id },
             data: { balance: newSolde },
           });
-        }
 
-        return true;
-      });
-    } catch (error) {
-      if (error.code === '55P03') {
-        console.warn(`Verrou sur cet enregistrement : ${error.message}`);
-        throw new Error('Transaction impossible, please retry later.');
-      } else if (error.code === 'P2028') {
-        console.warn(`Transaction impossible : le pool de connexions est déjà au complet.`);
-        throw new Error('Transaction already in progress, please retry later.');
-      } else {
-        console.error('Erreur réelle dans transferFunds:', error.message);
-        throw error;
+          console.log(`Account ${id} updated successfully.`);
+
+          return { id, success: true };
+        });
+
+        successfulUpdates.push(result);
+      } catch (error) {
+        // Gestion de l'erreur pour ce compte
+        console.error(`Error with account ${id}: ${error.message}`);
+        failedAccounts.push({ id, success: false, error: error.message });
       }
     }
+
+    // Retourner les résultats
+    return { successfulUpdates, failedAccounts };
   },
 };
 
