@@ -3,16 +3,6 @@ import marketPriceRepository from '../../../../shared/repositories/db/marketPric
 
 const transactionController = {
 
-  // async newTransaction(data, _, callback) {
-
-  //   bankAccountsRepository.transferFunds(data).catch((err) => {
-  //     console.error('Erreur dans updateBankAccount (non bloquante) :', err);
-  //   });
-
-  //   // Répondre avec succès (ça peut être ajusté si besoin)
-  //   callback({ success: true });
-  // },
-
   transactionInitiate(data, socket, callback) {
     const { io } = socket.data;
 
@@ -34,6 +24,14 @@ const transactionController = {
     callback({ success: true });
   },
 
+  async transactionCancel(data, socket, callback) {
+    const { io } = socket.data;
+
+    io.emit('transaction:cancelled', data);
+
+    callback({ success: true });
+  },
+
   async createBankAccount(data, socket, callback) {
     const { io } = socket.data;
 
@@ -42,6 +40,10 @@ const transactionController = {
     // });
 
     const bankAccount = await bankAccountsRepository.createBankAccount(data);
+
+    if (!bankAccount) {
+      throw new Error('Error creating bank account');
+    }
 
     io.emit('account:created', bankAccount);
 
@@ -56,6 +58,10 @@ const transactionController = {
     // });
 
     const bankAccountDeleted = await bankAccountsRepository.deleteBankAccount(data);
+
+    if (!bankAccountDeleted) {
+      throw new Error('Error deleting bank account');
+    }
 
     io.emit('account:deleted', bankAccountDeleted);
 

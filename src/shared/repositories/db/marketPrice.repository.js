@@ -7,6 +7,9 @@ const marketPriceRepository = {
     // Récupérer l'itemBlock
     const itemBlock = await prisma.itemBlock.findUnique({
       where: { id: itemBlockId },
+      include: {
+        marketPrices: true,
+      },
     });
 
     if (!itemBlock) {
@@ -18,9 +21,10 @@ const marketPriceRepository = {
       where: { itemBlockId },
       data: {
         price,
+        updatedAt: new Date(),
         marketPriceHistories: {
           create: {
-            price: itemBlock.price,
+            price: itemBlock.marketPrices.price,
           },
         },
       },

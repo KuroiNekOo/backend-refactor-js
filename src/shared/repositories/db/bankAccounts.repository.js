@@ -22,62 +22,6 @@ async function generateNewRib() {
 
 const bankAccountsRepository = {
 
-  // async transferFunds({ sender, recipient }) {
-  //   const { id: senderRib, newSolde: senderSolde } = sender;
-  //   const { id: recipientRib, newSolde: recipientSolde } = recipient;
-
-  //   if (!senderRib || !recipientRib || senderSolde == null || recipientSolde == null) {
-  //     throw new Error('Missing parameters: senderRib, recipientRib, senderSolde, or recipientSolde');
-  //   }
-
-  //   try {
-  //     return await prisma.$transaction(async (prisma) => {
-  //       await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
-
-  //       const accountsResult = await prisma.$queryRaw`
-  //         SELECT * FROM \`bank_account\`
-  //         WHERE id IN (${senderRib}, ${recipientRib})
-  //         FOR UPDATE;
-  //       `;
-
-  //       const senderAccount = accountsResult.find(acc => acc.id === senderRib);
-  //       const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
-
-  //       if (!senderAccount) {
-  //         throw new Error('Sender account does not exist.');
-  //       }
-
-  //       if (!recipientAccount) {
-  //         throw new Error('Recipient account does not exist.');
-  //       }
-
-  //       await prisma.bankAccount.update({
-  //         where: { id: senderRib },
-  //         data: { balance: senderSolde },
-  //       });
-
-  //       await prisma.bankAccount.update({
-  //         where: { id: recipientRib },
-  //         data: { balance: recipientSolde },
-  //       });
-
-  //       return true;
-  //     });
-  //   } catch (error) {
-  //     // Erreur si il y a un verrouillage
-  //     if (error.code === '55P03') {
-  //       console.warn(`Verrou sur cet enregistrement : ${error.message}`);
-  //       throw new Error('Transaction impossible, please retry later.');
-  //     } else if (error.code === 'P2028') {
-  //       console.warn(`Transaction impossible : le pool de connexions est déjà au complet.`);
-  //       throw new Error('Transaction already in progress for these accounts, please retry later.');
-  //     } else {
-  //       console.error('Erreur réelle dans transferFunds:', error.message);
-  //       throw error;
-  //     }
-  //   }
-  // },
-
   async transferFunds({ accounts }) {
     if (!Array.isArray(accounts) || accounts.length === 0) {
       throw new Error('Accounts array is required and cannot be empty.');
@@ -108,7 +52,10 @@ const bankAccountsRepository = {
           // Mettre à jour le solde du compte
           await prisma.bankAccount.update({
             where: { id },
-            data: { balance: newSolde },
+            data: {
+              balance: newSolde,
+              updatedAt: new Date(),
+            },
           });
 
           console.log(`Account ${id} updated successfully.`);
@@ -170,13 +117,17 @@ const bankAccountsRepository = {
         isDefault: true,
         id: { not: rib },
       },
-      data: { isDefault: false },
+      data: {
+        isDefault: false,
+        updatedAt: new Date(),
+      },
     });
 
     return prisma.bankAccount.update({
       where: { id: rib },
       data: {
         isDefault: true,
+        updatedAt: new Date(),
       },
     });
   },

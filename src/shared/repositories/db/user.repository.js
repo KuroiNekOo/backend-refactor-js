@@ -33,6 +33,7 @@ const userRepository = {
         name: {
           equals: pseudo, // Comparaison stricte (case-sensitive)
         },
+        isActive: true,
       },
     });
   },

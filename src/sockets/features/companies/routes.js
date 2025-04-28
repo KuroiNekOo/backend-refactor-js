@@ -2,8 +2,13 @@ import { withErrorHandling } from '../../shared/middlewares/errors.handler.js';
 import { withValidation } from '../../shared/middlewares/schemas.validation.js';
 import CompaniesController from './controllers/compagnies.controller.js';
 import {
+  addPermissionsToPlayerSchema,
+  createCompanySchema,
+  deleteCompanySchema,
   dismissalSchema,
   recruitmentSchema,
+  removePermissionsFromPlayerSchema,
+  updateCompanySchema,
 } from './schemas/companies.schemas.js';
 
 export const setupBanksSockets = (io) => {
@@ -52,6 +57,126 @@ export const setupBanksSockets = (io) => {
       (data, callback) => {
         const handler = withErrorHandling(
           withValidation(dismissalSchema, CompaniesController.dismissalConfirmed)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'create',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(createCompanySchema, CompaniesController.createCompany)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'create:confirmed',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(createCompanySchema, CompaniesController.createCompanyConfirmed)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'update',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(updateCompanySchema, CompaniesController.updateCompany)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'update:confirmed',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(updateCompanySchema, CompaniesController.updateCompanyConfirmed)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'delete',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(deleteCompanySchema, CompaniesController.deleteCompany)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'delete:confirmed',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(deleteCompanySchema, CompaniesController.deleteCompanyConfirmed)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'permission:add',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(addPermissionsToPlayerSchema, CompaniesController.addPermissionsToPlayer)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'permission:add:confirmed',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(addPermissionsToPlayerSchema, CompaniesController.addPermissionsToPlayerConfirmed)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'permission:remove',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(removePermissionsFromPlayerSchema, CompaniesController.removePermissionsFromPlayer)
+        );
+
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'permission:remove:confirmed',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(removePermissionsFromPlayerSchema, CompaniesController.removePermissionsFromPlayerConfirmed)
         );
 
         // Appel explicite avec `socket`

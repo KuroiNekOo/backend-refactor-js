@@ -6,7 +6,8 @@ import {
   deleteBankAccountSchema,
   setDefaultBankAccountSchema,
   setPriceFluctuationSchema,
-  transactionConfirmSchema, 
+  transactionCancelSchema,
+  transactionConfirmSchema,
   transactionInitiateSchema,
 } from './schemas/transactions.schemas.js';
 
@@ -14,19 +15,6 @@ export const setupBanksSockets = (io) => {
   io.of('/banks').on('connection', (socket) => {
     socket.data.io = io.of('/banks'); // ou socket.data.io = io si tu veux le root
     console.log('New connection to /banks namespace');
-
-    // Gestion de l'événement "banks:transaction"
-    // socket.on(
-    //   'transaction:confirm',
-    //   (data, callback) => {
-    //     const handler = withErrorHandling(
-    //       withValidation(transactionSchema, transactionController.newTransaction)
-    //     );
-    
-    //     // Appel explicite avec `socket`
-    //     handler(data, socket, callback);
-    //   }
-    // );
 
     socket.on(
       'transaction:initiate',
@@ -45,6 +33,18 @@ export const setupBanksSockets = (io) => {
       (data, callback) => {
         const handler = withErrorHandling(
           withValidation(transactionConfirmSchema, transactionController.transactionConfirm)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'transaction:cancel',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(transactionCancelSchema, transactionController.transactionCancel)
         );
     
         // Appel explicite avec `socket`

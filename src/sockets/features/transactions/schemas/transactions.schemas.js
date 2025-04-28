@@ -18,6 +18,14 @@ export const transactionConfirmSchema = z.object({
   })),
 }).required();
 
+export const transactionCancelSchema = z.object({
+  id: z.string().uuid(),
+  accounts: z.array(z.object({
+    id: z.string().regex(RIB_REGEX),
+    newSolde: z.number().positive(),
+  })),
+}).required();
+
 export const deleteBankAccountSchema = z.object({
   id: z.string().uuid(),
   rib: z.string().regex(RIB_REGEX),

@@ -483,7 +483,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/usr/src/app/prisma/generated/client",
+      "value": "/home/xam42/Documents/code/semirp/brjs/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -505,7 +505,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/usr/src/app/prisma/schema.prisma",
+    "sourceFilePath": "/home/xam42/Documents/code/semirp/brjs/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
