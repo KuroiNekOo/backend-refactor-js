@@ -1,7 +1,14 @@
 import { withErrorHandling } from '../../shared/middlewares/errors.handler.js';
 import { withValidation } from '../../shared/middlewares/schemas.validation.js';
 import transactionController from './controllers/transaction.js';
-import { multiBankAccountSchema, transactionSchema } from './schemas/transactions.schemas.js';
+import {
+  createBankAccountSchema,
+  deleteBankAccountSchema,
+  setDefaultBankAccountSchema,
+  setPriceFluctuationSchema,
+  transactionConfirmSchema, 
+  transactionInitiateSchema,
+} from './schemas/transactions.schemas.js';
 
 export const setupBanksSockets = (io) => {
   io.of('/banks').on('connection', (socket) => {
@@ -9,11 +16,23 @@ export const setupBanksSockets = (io) => {
     console.log('New connection to /banks namespace');
 
     // Gestion de l'événement "banks:transaction"
+    // socket.on(
+    //   'transaction:confirm',
+    //   (data, callback) => {
+    //     const handler = withErrorHandling(
+    //       withValidation(transactionSchema, transactionController.newTransaction)
+    //     );
+    
+    //     // Appel explicite avec `socket`
+    //     handler(data, socket, callback);
+    //   }
+    // );
+
     socket.on(
-      'transaction',
+      'transaction:initiate',
       (data, callback) => {
         const handler = withErrorHandling(
-          withValidation(transactionSchema, transactionController.newTransaction)
+          withValidation(transactionInitiateSchema, transactionController.transactionInitiate)
         );
     
         // Appel explicite avec `socket`
@@ -22,10 +41,58 @@ export const setupBanksSockets = (io) => {
     );
 
     socket.on(
-      'transaction2',
+      'transaction:confirm',
       (data, callback) => {
         const handler = withErrorHandling(
-          withValidation(multiBankAccountSchema, transactionController.newTransaction2)
+          withValidation(transactionConfirmSchema, transactionController.transactionConfirm)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'account:create',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(createBankAccountSchema, transactionController.createBankAccount)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'account:delete',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(deleteBankAccountSchema, transactionController.deleteBankAccount)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'account:setdefault',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(setDefaultBankAccountSchema, transactionController.setDefaultBankAccount)
+        );
+    
+        // Appel explicite avec `socket`
+        handler(data, socket, callback);
+      }
+    );
+
+    socket.on(
+      'setpricefluctuation',
+      (data, callback) => {
+        const handler = withErrorHandling(
+          withValidation(setPriceFluctuationSchema, transactionController.setPriceFluctuation)
         );
     
         // Appel explicite avec `socket`

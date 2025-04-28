@@ -1,63 +1,84 @@
 import { prisma } from '../../../config/database.js';
+import { RIB_REGEX } from '../../../sockets/features/transactions/schemas/transactions.schemas.js';
+import RandExp from 'randexp';
+
+async function generateNewRib() {
+  // Generer le rib avec randexp
+  const rib = new RandExp(RIB_REGEX).gen();
+
+  // Vérifier si le rib existe déjà dans la base de données
+  const existingAccount = await prisma.bankAccount.findUnique({
+    where: { id: rib },
+  });
+
+  if (existingAccount) {
+    // Si le rib existe déjà, générer un nouveau rib
+    return generateNewRib();
+  }
+
+  // Si le rib n'existe pas, le retourner
+  return rib;
+}
 
 const bankAccountsRepository = {
-  async transferFunds({ sender, recipient }) {
-    const { id: senderRib, newSolde: senderSolde } = sender;
-    const { id: recipientRib, newSolde: recipientSolde } = recipient;
 
-    if (!senderRib || !recipientRib || senderSolde == null || recipientSolde == null) {
-      throw new Error('Missing parameters: senderRib, recipientRib, senderSolde, or recipientSolde');
-    }
+  // async transferFunds({ sender, recipient }) {
+  //   const { id: senderRib, newSolde: senderSolde } = sender;
+  //   const { id: recipientRib, newSolde: recipientSolde } = recipient;
 
-    try {
-      return await prisma.$transaction(async (prisma) => {
-        await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
+  //   if (!senderRib || !recipientRib || senderSolde == null || recipientSolde == null) {
+  //     throw new Error('Missing parameters: senderRib, recipientRib, senderSolde, or recipientSolde');
+  //   }
 
-        const accountsResult = await prisma.$queryRaw`
-          SELECT * FROM \`bank_account\`
-          WHERE id IN (${senderRib}, ${recipientRib})
-          FOR UPDATE;
-        `;
+  //   try {
+  //     return await prisma.$transaction(async (prisma) => {
+  //       await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
 
-        const senderAccount = accountsResult.find(acc => acc.id === senderRib);
-        const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
+  //       const accountsResult = await prisma.$queryRaw`
+  //         SELECT * FROM \`bank_account\`
+  //         WHERE id IN (${senderRib}, ${recipientRib})
+  //         FOR UPDATE;
+  //       `;
 
-        if (!senderAccount) {
-          throw new Error('Sender account does not exist.');
-        }
+  //       const senderAccount = accountsResult.find(acc => acc.id === senderRib);
+  //       const recipientAccount = accountsResult.find(acc => acc.id === recipientRib);
 
-        if (!recipientAccount) {
-          throw new Error('Recipient account does not exist.');
-        }
+  //       if (!senderAccount) {
+  //         throw new Error('Sender account does not exist.');
+  //       }
 
-        await prisma.bankAccount.update({
-          where: { id: senderRib },
-          data: { balance: senderSolde },
-        });
+  //       if (!recipientAccount) {
+  //         throw new Error('Recipient account does not exist.');
+  //       }
 
-        await prisma.bankAccount.update({
-          where: { id: recipientRib },
-          data: { balance: recipientSolde },
-        });
+  //       await prisma.bankAccount.update({
+  //         where: { id: senderRib },
+  //         data: { balance: senderSolde },
+  //       });
 
-        return true;
-      });
-    } catch (error) {
-      // Erreur si il y a un verrouillage
-      if (error.code === '55P03') {
-        console.warn(`Verrou sur cet enregistrement : ${error.message}`);
-        throw new Error('Transaction impossible, please retry later.');
-      } else if (error.code === 'P2028') {
-        console.warn(`Transaction impossible : le pool de connexions est déjà au complet.`);
-        throw new Error('Transaction already in progress for these accounts, please retry later.');
-      } else {
-        console.error('Erreur réelle dans transferFunds:', error.message);
-        throw error;
-      }
-    }
-  },
+  //       await prisma.bankAccount.update({
+  //         where: { id: recipientRib },
+  //         data: { balance: recipientSolde },
+  //       });
 
-  async transferFunds2({ accounts }) {
+  //       return true;
+  //     });
+  //   } catch (error) {
+  //     // Erreur si il y a un verrouillage
+  //     if (error.code === '55P03') {
+  //       console.warn(`Verrou sur cet enregistrement : ${error.message}`);
+  //       throw new Error('Transaction impossible, please retry later.');
+  //     } else if (error.code === 'P2028') {
+  //       console.warn(`Transaction impossible : le pool de connexions est déjà au complet.`);
+  //       throw new Error('Transaction already in progress for these accounts, please retry later.');
+  //     } else {
+  //       console.error('Erreur réelle dans transferFunds:', error.message);
+  //       throw error;
+  //     }
+  //   }
+  // },
+
+  async transferFunds({ accounts }) {
     if (!Array.isArray(accounts) || accounts.length === 0) {
       throw new Error('Accounts array is required and cannot be empty.');
     }
@@ -106,6 +127,60 @@ const bankAccountsRepository = {
     // Retourner les résultats
     return { successfulUpdates, failedAccounts };
   },
+
+  async createBankAccount(
+    { uuid, balance, ownerType, isDefault }
+  ) {
+    const rib = await generateNewRib();
+
+    if (!rib) {
+      throw new Error('Failed to generate a new RIB.');
+    }
+
+    return prisma.bankAccount.create({
+      data: {
+        id: rib,
+        userId: ownerType === 'USER' ? uuid : null,
+        companyId: ownerType === 'COMPANY' ? uuid : null,
+        balance,
+        isDefault,
+      },
+    });
+  },
+
+  deleteBankAccount({ rib }) {
+    return prisma.bankAccount.delete({
+      where: { id: rib },
+    });
+  },
+
+  async setDefaultBankAccount({ rib }) {
+    const bankAccount = await prisma.bankAccount.findUnique({
+      where: { id: rib },
+    });
+
+    if (!bankAccount) {
+      throw new Error('Bank account not found.');
+    }
+
+    // Mettre à jour tous les autres comptes pour qu'ils ne soient pas par défaut
+    await prisma.bankAccount.updateMany({
+      where: {
+        userId: bankAccount.userId,
+        isDefault: true,
+        id: { not: rib },
+      },
+      data: { isDefault: false },
+    });
+
+    return prisma.bankAccount.update({
+      where: { id: rib },
+      data: {
+        isDefault: true,
+      },
+    });
+  },
+
 };
 
 export default bankAccountsRepository;
