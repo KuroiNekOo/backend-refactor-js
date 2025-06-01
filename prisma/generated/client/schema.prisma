@@ -278,7 +278,7 @@ model ItemBlock {
 model MarketPrice {
   id                   Int                  @id @default(autoincrement())
   itemBlockId          Int                  @unique @map("item_block_id")
-  price                Float                @map("price")
+  price                Decimal              @map("price") @db.Decimal(19, 8)
   isActive             Boolean              @default(true) @map("is_active")
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
@@ -291,7 +291,7 @@ model MarketPrice {
 model MarketPriceHistory {
   id            Int         @id @default(autoincrement())
   marketPriceId Int         @map("market_price_id")
-  price         Float       @map("price")
+  price         Decimal     @map("price") @db.Decimal(19, 8)
   isActive      Boolean     @default(true) @map("is_active")
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
@@ -349,7 +349,7 @@ model Chunk {
 model ChunkSold {
   chunkId   Int      @map("chunk_id")
   companyId String   @map("company_id") @db.VarChar(36)
-  price     Float    @map("price")
+  price     Decimal  @map("price") @db.Decimal(19, 8)
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

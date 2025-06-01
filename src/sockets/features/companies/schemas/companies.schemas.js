@@ -21,6 +21,13 @@ export const createCompanySchema = z.object({
 export const updateCompanySchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(15),
+  // name: z.string().min(1).max(15).optional(),
+  // description: z.string().min(1).max(100).optional(),
+  // tags: z.array(z.string()).optional(),
+  // users: z.array(z.object({
+  //   id: z.string().uuid(),
+  //   salary: z.number().min(0).optional(),
+  // })).optional(),
 }).strict();
 
 export const deleteCompanySchema = z.object({

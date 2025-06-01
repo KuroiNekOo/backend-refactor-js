@@ -22,9 +22,9 @@ async function generateNewRib() {
 
 const bankAccountsRepository = {
 
-  async transferFunds({ accounts }) {
-    if (!Array.isArray(accounts) || accounts.length === 0) {
-      throw new Error('Accounts array is required and cannot be empty.');
+  async transferFunds({ transactions }) {
+    if (!Array.isArray(transactions) || transactions.length === 0) {
+      throw new Error('Transactions array is required and cannot be empty.');
     }
 
     // Résultats des mises à jour
@@ -32,42 +32,75 @@ const bankAccountsRepository = {
     const failedAccounts = [];
 
     // Boucle sur chaque compte et traitement séquentiel
-    for (const { id, newSolde } of accounts) {
+    for (const { from, to, amount } of transactions) {
       try {
         // Effectuer une transaction pour chaque compte
         const result = await prisma.$transaction(async (prisma) => {
+
+          // Cette ligne permet de réduire le temps d'attente pour les verrous InnoDB
+          // à 1 seconde pour éviter les blocages prolongés
           await prisma.$executeRawUnsafe(`SET SESSION innodb_lock_wait_timeout = 1;`);
 
-          // Vérifier que le compte existe
-          const accountResult = await prisma.$queryRaw`
+          // Vérifier que le compte from existe
+          const fromAccount = await prisma.$queryRaw`
             SELECT * FROM \`bank_account\`
-            WHERE id = ${id}
+            WHERE id = ${from}
             FOR UPDATE;
           `;
 
-          if (!accountResult || accountResult.length === 0) {
-            throw new Error(`Account with RIB ${id} does not exist.`);
+          if (!fromAccount || fromAccount.length === 0) {
+            throw new Error(`Account with RIB ${from} does not exist.`);
           }
 
-          // Mettre à jour le solde du compte
+          // Vérifier que le compte to existe
+          const toAccount = await prisma.$queryRaw`
+            SELECT * FROM \`bank_account\`
+            WHERE id = ${to}
+            FOR UPDATE;
+          `;
+
+          if (!toAccount || toAccount.length === 0) {
+            throw new Error(`Account with RIB ${to} does not exist.`);
+          }
+
+          // Vérifier que le solde du compte from est suffisant
+          const fromSolde = fromAccount[0].balance;
+          const toSolde = toAccount[0].balance;
+
+          if (fromSolde < amount) {
+            throw new Error(`Insufficient balance in account ${from}. Current balance: ${fromSolde}, required: ${amount}.`);
+          }
+
+          // Mettre à jour le solde du compte from
           await prisma.bankAccount.update({
-            where: { id },
+            where: { id: from },
             data: {
-              balance: newSolde,
+              balance: fromSolde - amount,
               updatedAt: new Date(),
             },
           });
 
-          console.log(`Account ${id} updated successfully.`);
+          console.log(`Account ${from} updated successfully.`);
 
-          return { id, success: true };
+          // Mettre à jour le solde du compte to
+          await prisma.bankAccount.update({
+            where: { id: to },
+            data: {
+              balance: toSolde + amount,
+              updatedAt: new Date(),
+            },
+          });
+
+          console.log(`Account ${to} updated successfully.`);
+
+          return { from, to, amount, success: true };
         });
 
         successfulUpdates.push(result);
       } catch (error) {
         // Gestion de l'erreur pour ce compte
-        console.error(`Error with account ${id}: ${error.message}`);
-        failedAccounts.push({ id, success: false, error: error.message });
+        console.error(`Error with from account ${from} and to account ${to}: ${error.message}`);
+        failedAccounts.push({ from, to, amount, success: false, error: error.message });
       }
     }
 

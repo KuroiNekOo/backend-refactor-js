@@ -15,11 +15,13 @@ const transactionController = {
   async transactionConfirm(data, socket, callback) {
     const { io } = socket.data;
 
-    bankAccountsRepository.transferFunds(data).catch((err) => {
-      console.error('Erreur dans updateBankAccount (non bloquante) :', err);
-    });
+    // bankAccountsRepository.transferFunds(data).catch((err) => {
+    //   console.error('Erreur dans updateBankAccount (non bloquante) :', err);
+    // });
 
-    io.emit('transaction:validated', data);
+    const transactions = await bankAccountsRepository.transferFunds(data);
+
+    io.emit('transaction:validated', transactions);
 
     callback({ success: true });
   },
@@ -71,11 +73,13 @@ const transactionController = {
   async setDefaultBankAccount(data, socket, callback) {
     const { io } = socket.data;
 
-    bankAccountsRepository.setDefaultBankAccount(data).catch((err) => {
-      console.error('Erreur dans setDefaultBankAccount (non bloquante) :', err);
-    });
+    // bankAccountsRepository.setDefaultBankAccount(data).catch((err) => {
+    //   console.error('Erreur dans setDefaultBankAccount (non bloquante) :', err);
+    // });
 
-    io.emit('account:defaulted', data);
+    const bankAccount = await bankAccountsRepository.setDefaultBankAccount(data);
+
+    io.emit('account:defaulted', bankAccount);
 
     callback({ success: true });
   },
@@ -83,11 +87,13 @@ const transactionController = {
   async setPriceFluctuation(data, socket, callback) {
     const { io } = socket.data;
 
-    marketPriceRepository.setPriceFluctuation(data).catch((err) => {
-      console.error('Erreur dans setPriceFluctuation (non bloquante) :', err);
-    });
+    // marketPriceRepository.setPriceFluctuation(data).catch((err) => {
+    //   console.error('Erreur dans setPriceFluctuation (non bloquante) :', err);
+    // });
 
-    io.emit('setpricefluctuated', data);
+    const marketPrice = await marketPriceRepository.setPriceFluctuation(data);
+
+    io.emit('setpricefluctuated', marketPrice);
 
     callback({ success: true });
   },

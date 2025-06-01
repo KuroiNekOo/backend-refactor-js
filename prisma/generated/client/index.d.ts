@@ -20584,19 +20584,19 @@ export namespace Prisma {
   export type MarketPriceAvgAggregateOutputType = {
     id: number | null
     itemBlockId: number | null
-    price: number | null
+    price: Decimal | null
   }
 
   export type MarketPriceSumAggregateOutputType = {
     id: number | null
     itemBlockId: number | null
-    price: number | null
+    price: Decimal | null
   }
 
   export type MarketPriceMinAggregateOutputType = {
     id: number | null
     itemBlockId: number | null
-    price: number | null
+    price: Decimal | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -20605,7 +20605,7 @@ export namespace Prisma {
   export type MarketPriceMaxAggregateOutputType = {
     id: number | null
     itemBlockId: number | null
-    price: number | null
+    price: Decimal | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -20751,7 +20751,7 @@ export namespace Prisma {
   export type MarketPriceGroupByOutputType = {
     id: number
     itemBlockId: number
-    price: number
+    price: Decimal
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -20815,7 +20815,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       itemBlockId: number
-      price: number
+      price: Prisma.Decimal
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -21192,7 +21192,7 @@ export namespace Prisma {
   interface MarketPriceFieldRefs {
     readonly id: FieldRef<"MarketPrice", 'Int'>
     readonly itemBlockId: FieldRef<"MarketPrice", 'Int'>
-    readonly price: FieldRef<"MarketPrice", 'Float'>
+    readonly price: FieldRef<"MarketPrice", 'Decimal'>
     readonly isActive: FieldRef<"MarketPrice", 'Boolean'>
     readonly createdAt: FieldRef<"MarketPrice", 'DateTime'>
     readonly updatedAt: FieldRef<"MarketPrice", 'DateTime'>
@@ -21596,19 +21596,19 @@ export namespace Prisma {
   export type MarketPriceHistoryAvgAggregateOutputType = {
     id: number | null
     marketPriceId: number | null
-    price: number | null
+    price: Decimal | null
   }
 
   export type MarketPriceHistorySumAggregateOutputType = {
     id: number | null
     marketPriceId: number | null
-    price: number | null
+    price: Decimal | null
   }
 
   export type MarketPriceHistoryMinAggregateOutputType = {
     id: number | null
     marketPriceId: number | null
-    price: number | null
+    price: Decimal | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -21617,7 +21617,7 @@ export namespace Prisma {
   export type MarketPriceHistoryMaxAggregateOutputType = {
     id: number | null
     marketPriceId: number | null
-    price: number | null
+    price: Decimal | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -21763,7 +21763,7 @@ export namespace Prisma {
   export type MarketPriceHistoryGroupByOutputType = {
     id: number
     marketPriceId: number
-    price: number
+    price: Decimal
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -21822,7 +21822,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       marketPriceId: number
-      price: number
+      price: Prisma.Decimal
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -22198,7 +22198,7 @@ export namespace Prisma {
   interface MarketPriceHistoryFieldRefs {
     readonly id: FieldRef<"MarketPriceHistory", 'Int'>
     readonly marketPriceId: FieldRef<"MarketPriceHistory", 'Int'>
-    readonly price: FieldRef<"MarketPriceHistory", 'Float'>
+    readonly price: FieldRef<"MarketPriceHistory", 'Decimal'>
     readonly isActive: FieldRef<"MarketPriceHistory", 'Boolean'>
     readonly createdAt: FieldRef<"MarketPriceHistory", 'DateTime'>
     readonly updatedAt: FieldRef<"MarketPriceHistory", 'DateTime'>
@@ -25617,18 +25617,18 @@ export namespace Prisma {
 
   export type ChunkSoldAvgAggregateOutputType = {
     chunkId: number | null
-    price: number | null
+    price: Decimal | null
   }
 
   export type ChunkSoldSumAggregateOutputType = {
     chunkId: number | null
-    price: number | null
+    price: Decimal | null
   }
 
   export type ChunkSoldMinAggregateOutputType = {
     chunkId: number | null
     companyId: string | null
-    price: number | null
+    price: Decimal | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -25637,7 +25637,7 @@ export namespace Prisma {
   export type ChunkSoldMaxAggregateOutputType = {
     chunkId: number | null
     companyId: string | null
-    price: number | null
+    price: Decimal | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -25781,7 +25781,7 @@ export namespace Prisma {
   export type ChunkSoldGroupByOutputType = {
     chunkId: number
     companyId: string
-    price: number
+    price: Decimal
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -25843,7 +25843,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       chunkId: number
       companyId: string
-      price: number
+      price: Prisma.Decimal
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -26220,7 +26220,7 @@ export namespace Prisma {
   interface ChunkSoldFieldRefs {
     readonly chunkId: FieldRef<"ChunkSold", 'Int'>
     readonly companyId: FieldRef<"ChunkSold", 'String'>
-    readonly price: FieldRef<"ChunkSold", 'Float'>
+    readonly price: FieldRef<"ChunkSold", 'Decimal'>
     readonly isActive: FieldRef<"ChunkSold", 'Boolean'>
     readonly createdAt: FieldRef<"ChunkSold", 'DateTime'>
     readonly updatedAt: FieldRef<"ChunkSold", 'DateTime'>
@@ -28144,6 +28144,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
    * Reference to a field of type 'ChunkStatus'
    */
   export type EnumChunkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChunkStatus'>
@@ -29313,7 +29320,7 @@ export namespace Prisma {
     NOT?: MarketPriceWhereInput | MarketPriceWhereInput[]
     id?: IntFilter<"MarketPrice"> | number
     itemBlockId?: IntFilter<"MarketPrice"> | number
-    price?: FloatFilter<"MarketPrice"> | number
+    price?: DecimalFilter<"MarketPrice"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"MarketPrice"> | boolean
     createdAt?: DateTimeFilter<"MarketPrice"> | Date | string
     updatedAt?: DateTimeFilter<"MarketPrice"> | Date | string
@@ -29338,7 +29345,7 @@ export namespace Prisma {
     AND?: MarketPriceWhereInput | MarketPriceWhereInput[]
     OR?: MarketPriceWhereInput[]
     NOT?: MarketPriceWhereInput | MarketPriceWhereInput[]
-    price?: FloatFilter<"MarketPrice"> | number
+    price?: DecimalFilter<"MarketPrice"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"MarketPrice"> | boolean
     createdAt?: DateTimeFilter<"MarketPrice"> | Date | string
     updatedAt?: DateTimeFilter<"MarketPrice"> | Date | string
@@ -29366,7 +29373,7 @@ export namespace Prisma {
     NOT?: MarketPriceScalarWhereWithAggregatesInput | MarketPriceScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"MarketPrice"> | number
     itemBlockId?: IntWithAggregatesFilter<"MarketPrice"> | number
-    price?: FloatWithAggregatesFilter<"MarketPrice"> | number
+    price?: DecimalWithAggregatesFilter<"MarketPrice"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolWithAggregatesFilter<"MarketPrice"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"MarketPrice"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"MarketPrice"> | Date | string
@@ -29378,7 +29385,7 @@ export namespace Prisma {
     NOT?: MarketPriceHistoryWhereInput | MarketPriceHistoryWhereInput[]
     id?: IntFilter<"MarketPriceHistory"> | number
     marketPriceId?: IntFilter<"MarketPriceHistory"> | number
-    price?: FloatFilter<"MarketPriceHistory"> | number
+    price?: DecimalFilter<"MarketPriceHistory"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"MarketPriceHistory"> | boolean
     createdAt?: DateTimeFilter<"MarketPriceHistory"> | Date | string
     updatedAt?: DateTimeFilter<"MarketPriceHistory"> | Date | string
@@ -29401,7 +29408,7 @@ export namespace Prisma {
     OR?: MarketPriceHistoryWhereInput[]
     NOT?: MarketPriceHistoryWhereInput | MarketPriceHistoryWhereInput[]
     marketPriceId?: IntFilter<"MarketPriceHistory"> | number
-    price?: FloatFilter<"MarketPriceHistory"> | number
+    price?: DecimalFilter<"MarketPriceHistory"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"MarketPriceHistory"> | boolean
     createdAt?: DateTimeFilter<"MarketPriceHistory"> | Date | string
     updatedAt?: DateTimeFilter<"MarketPriceHistory"> | Date | string
@@ -29428,7 +29435,7 @@ export namespace Prisma {
     NOT?: MarketPriceHistoryScalarWhereWithAggregatesInput | MarketPriceHistoryScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"MarketPriceHistory"> | number
     marketPriceId?: IntWithAggregatesFilter<"MarketPriceHistory"> | number
-    price?: FloatWithAggregatesFilter<"MarketPriceHistory"> | number
+    price?: DecimalWithAggregatesFilter<"MarketPriceHistory"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolWithAggregatesFilter<"MarketPriceHistory"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"MarketPriceHistory"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"MarketPriceHistory"> | Date | string
@@ -29676,7 +29683,7 @@ export namespace Prisma {
     NOT?: ChunkSoldWhereInput | ChunkSoldWhereInput[]
     chunkId?: IntFilter<"ChunkSold"> | number
     companyId?: StringFilter<"ChunkSold"> | string
-    price?: FloatFilter<"ChunkSold"> | number
+    price?: DecimalFilter<"ChunkSold"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"ChunkSold"> | boolean
     createdAt?: DateTimeFilter<"ChunkSold"> | Date | string
     updatedAt?: DateTimeFilter<"ChunkSold"> | Date | string
@@ -29703,7 +29710,7 @@ export namespace Prisma {
     NOT?: ChunkSoldWhereInput | ChunkSoldWhereInput[]
     chunkId?: IntFilter<"ChunkSold"> | number
     companyId?: StringFilter<"ChunkSold"> | string
-    price?: FloatFilter<"ChunkSold"> | number
+    price?: DecimalFilter<"ChunkSold"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"ChunkSold"> | boolean
     createdAt?: DateTimeFilter<"ChunkSold"> | Date | string
     updatedAt?: DateTimeFilter<"ChunkSold"> | Date | string
@@ -29731,7 +29738,7 @@ export namespace Prisma {
     NOT?: ChunkSoldScalarWhereWithAggregatesInput | ChunkSoldScalarWhereWithAggregatesInput[]
     chunkId?: IntWithAggregatesFilter<"ChunkSold"> | number
     companyId?: StringWithAggregatesFilter<"ChunkSold"> | string
-    price?: FloatWithAggregatesFilter<"ChunkSold"> | number
+    price?: DecimalWithAggregatesFilter<"ChunkSold"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolWithAggregatesFilter<"ChunkSold"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"ChunkSold"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ChunkSold"> | Date | string
@@ -30927,7 +30934,7 @@ export namespace Prisma {
   }
 
   export type MarketPriceCreateInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30938,7 +30945,7 @@ export namespace Prisma {
   export type MarketPriceUncheckedCreateInput = {
     id?: number
     itemBlockId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30946,7 +30953,7 @@ export namespace Prisma {
   }
 
   export type MarketPriceUpdateInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30957,7 +30964,7 @@ export namespace Prisma {
   export type MarketPriceUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     itemBlockId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30967,14 +30974,14 @@ export namespace Prisma {
   export type MarketPriceCreateManyInput = {
     id?: number
     itemBlockId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type MarketPriceUpdateManyMutationInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30983,14 +30990,14 @@ export namespace Prisma {
   export type MarketPriceUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     itemBlockId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MarketPriceHistoryCreateInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31000,14 +31007,14 @@ export namespace Prisma {
   export type MarketPriceHistoryUncheckedCreateInput = {
     id?: number
     marketPriceId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type MarketPriceHistoryUpdateInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31017,7 +31024,7 @@ export namespace Prisma {
   export type MarketPriceHistoryUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     marketPriceId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31026,14 +31033,14 @@ export namespace Prisma {
   export type MarketPriceHistoryCreateManyInput = {
     id?: number
     marketPriceId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type MarketPriceHistoryUpdateManyMutationInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31042,7 +31049,7 @@ export namespace Prisma {
   export type MarketPriceHistoryUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     marketPriceId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31296,7 +31303,7 @@ export namespace Prisma {
   }
 
   export type ChunkSoldCreateInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31307,14 +31314,14 @@ export namespace Prisma {
   export type ChunkSoldUncheckedCreateInput = {
     chunkId: number
     companyId: string
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ChunkSoldUpdateInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31325,7 +31332,7 @@ export namespace Prisma {
   export type ChunkSoldUncheckedUpdateInput = {
     chunkId?: IntFieldUpdateOperationsInput | number
     companyId?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31334,14 +31341,14 @@ export namespace Prisma {
   export type ChunkSoldCreateManyInput = {
     chunkId: number
     companyId: string
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ChunkSoldUpdateManyMutationInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31350,7 +31357,7 @@ export namespace Prisma {
   export type ChunkSoldUncheckedUpdateManyInput = {
     chunkId?: IntFieldUpdateOperationsInput | number
     companyId?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32577,6 +32584,17 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type MarketPriceHistoryListRelationFilter = {
     every?: MarketPriceHistoryWhereInput
     some?: MarketPriceHistoryWhereInput
@@ -32624,6 +32642,22 @@ export namespace Prisma {
     id?: SortOrder
     itemBlockId?: SortOrder
     price?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type MarketPriceScalarRelationFilter = {
@@ -34264,6 +34298,14 @@ export namespace Prisma {
     connect?: MarketPriceHistoryWhereUniqueInput | MarketPriceHistoryWhereUniqueInput[]
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type ItemBlockUpdateOneRequiredWithoutMarketPricesNestedInput = {
     create?: XOR<ItemBlockCreateWithoutMarketPricesInput, ItemBlockUncheckedCreateWithoutMarketPricesInput>
     connectOrCreate?: ItemBlockCreateOrConnectWithoutMarketPricesInput
@@ -34740,6 +34782,33 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type NestedEnumChunkStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ChunkStatus | EnumChunkStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ChunkStatus[]
@@ -35187,7 +35256,7 @@ export namespace Prisma {
   }
 
   export type ChunkSoldCreateWithoutCompanyInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35196,7 +35265,7 @@ export namespace Prisma {
 
   export type ChunkSoldUncheckedCreateWithoutCompanyInput = {
     chunkId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35324,7 +35393,7 @@ export namespace Prisma {
     NOT?: ChunkSoldScalarWhereInput | ChunkSoldScalarWhereInput[]
     chunkId?: IntFilter<"ChunkSold"> | number
     companyId?: StringFilter<"ChunkSold"> | string
-    price?: FloatFilter<"ChunkSold"> | number
+    price?: DecimalFilter<"ChunkSold"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"ChunkSold"> | boolean
     createdAt?: DateTimeFilter<"ChunkSold"> | Date | string
     updatedAt?: DateTimeFilter<"ChunkSold"> | Date | string
@@ -36998,7 +37067,7 @@ export namespace Prisma {
   }
 
   export type MarketPriceCreateWithoutItemBlockInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37007,7 +37076,7 @@ export namespace Prisma {
 
   export type MarketPriceUncheckedCreateWithoutItemBlockInput = {
     id?: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37059,7 +37128,7 @@ export namespace Prisma {
   }
 
   export type MarketPriceUpdateWithoutItemBlockInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37068,7 +37137,7 @@ export namespace Prisma {
 
   export type MarketPriceUncheckedUpdateWithoutItemBlockInput = {
     id?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37118,7 +37187,7 @@ export namespace Prisma {
   }
 
   export type MarketPriceHistoryCreateWithoutMarketPriceInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37126,7 +37195,7 @@ export namespace Prisma {
 
   export type MarketPriceHistoryUncheckedCreateWithoutMarketPriceInput = {
     id?: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37196,14 +37265,14 @@ export namespace Prisma {
     NOT?: MarketPriceHistoryScalarWhereInput | MarketPriceHistoryScalarWhereInput[]
     id?: IntFilter<"MarketPriceHistory"> | number
     marketPriceId?: IntFilter<"MarketPriceHistory"> | number
-    price?: FloatFilter<"MarketPriceHistory"> | number
+    price?: DecimalFilter<"MarketPriceHistory"> | Decimal | DecimalJsLike | number | string
     isActive?: BoolFilter<"MarketPriceHistory"> | boolean
     createdAt?: DateTimeFilter<"MarketPriceHistory"> | Date | string
     updatedAt?: DateTimeFilter<"MarketPriceHistory"> | Date | string
   }
 
   export type MarketPriceCreateWithoutMarketPriceHistoriesInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37213,7 +37282,7 @@ export namespace Prisma {
   export type MarketPriceUncheckedCreateWithoutMarketPriceHistoriesInput = {
     id?: number
     itemBlockId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37236,7 +37305,7 @@ export namespace Prisma {
   }
 
   export type MarketPriceUpdateWithoutMarketPriceHistoriesInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37246,7 +37315,7 @@ export namespace Prisma {
   export type MarketPriceUncheckedUpdateWithoutMarketPriceHistoriesInput = {
     id?: IntFieldUpdateOperationsInput | number
     itemBlockId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37371,7 +37440,7 @@ export namespace Prisma {
   }
 
   export type ChunkSoldCreateWithoutChunkInput = {
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37380,7 +37449,7 @@ export namespace Prisma {
 
   export type ChunkSoldUncheckedCreateWithoutChunkInput = {
     companyId: string
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37904,7 +37973,7 @@ export namespace Prisma {
 
   export type ChunkSoldCreateManyCompanyInput = {
     chunkId: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38027,7 +38096,7 @@ export namespace Prisma {
   }
 
   export type ChunkSoldUpdateWithoutCompanyInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38036,7 +38105,7 @@ export namespace Prisma {
 
   export type ChunkSoldUncheckedUpdateWithoutCompanyInput = {
     chunkId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38044,7 +38113,7 @@ export namespace Prisma {
 
   export type ChunkSoldUncheckedUpdateManyWithoutCompanyInput = {
     chunkId?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38446,14 +38515,14 @@ export namespace Prisma {
 
   export type MarketPriceHistoryCreateManyMarketPriceInput = {
     id?: number
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type MarketPriceHistoryUpdateWithoutMarketPriceInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38461,7 +38530,7 @@ export namespace Prisma {
 
   export type MarketPriceHistoryUncheckedUpdateWithoutMarketPriceInput = {
     id?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38469,7 +38538,7 @@ export namespace Prisma {
 
   export type MarketPriceHistoryUncheckedUpdateManyWithoutMarketPriceInput = {
     id?: IntFieldUpdateOperationsInput | number
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38477,14 +38546,14 @@ export namespace Prisma {
 
   export type ChunkSoldCreateManyChunkInput = {
     companyId: string
-    price: number
+    price: Decimal | DecimalJsLike | number | string
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ChunkSoldUpdateWithoutChunkInput = {
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38493,7 +38562,7 @@ export namespace Prisma {
 
   export type ChunkSoldUncheckedUpdateWithoutChunkInput = {
     companyId?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38501,7 +38570,7 @@ export namespace Prisma {
 
   export type ChunkSoldUncheckedUpdateManyWithoutChunkInput = {
     companyId?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

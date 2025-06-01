@@ -4,17 +4,18 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "add-perms": "chmod -R u+rwx .",
     "start": "NODE_ENV=production node ./src/server.js",
     "dev": "NODE_ENV=development node --watch ./src/server.js",
     "db:format": "prisma format",
     "db:first": "prisma migrate dev --create-only --name init",
     "db:create-migration": "prisma migrate dev --create-only --name",
-    "db:deploy": "prisma migrate deploy && npm run db:seeding",
+    "db:deploy": "prisma migrate deploy",
     "db:client-generate": "prisma generate",
-    "db:clean": "prisma migrate reset --force",
+    "db:clean": "prisma migrate reset",
     "db:seeding": "node ./prisma/scripts/seeding.js",
-    "db:reset": "npm run db:clean && npm run db:deploy && npm run db:client-generate",
-    "db:force-reset": "rm -rf ./prisma/migrations && npm run db:first && npm run db:clean && npm run db:deploy && npm run db:client-generate"
+    "db:reset": "npm run add-perms && npm run db:clean && npm run db:deploy && npm run db:client-generate",
+    "db:reset:force": "npm run add-perms && npm run db:clean && rm -rf ./prisma/migrations && npm run db:first && npm run db:deploy --force && npm run db:client-generate"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
