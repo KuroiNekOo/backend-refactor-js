@@ -22,7 +22,7 @@ async function generateNewRib() {
 
 const bankAccountsRepository = {
 
-  async transferFunds({ transactions }) {
+  async transferFunds({ id, transactions }) {
     if (!Array.isArray(transactions) || transactions.length === 0) {
       throw new Error('Transactions array is required and cannot be empty.');
     }
@@ -93,6 +93,16 @@ const bankAccountsRepository = {
 
           console.log(`Account ${to} updated successfully.`);
 
+          // Ajouter une entrée dans la table des transactions
+          await prisma.transaction.create({
+            data: {
+              senderId: from,
+              receiverId: to,
+              amount,
+              status: 'SUCCESS',
+            },
+          });
+
           return { from, to, amount, success: true };
         });
 
@@ -101,11 +111,21 @@ const bankAccountsRepository = {
         // Gestion de l'erreur pour ce compte
         console.error(`Error with from account ${from} and to account ${to}: ${error.message}`);
         failedAccounts.push({ from, to, amount, success: false, error: error.message });
+
+        // Ajouter une entrée dans la table des transactions
+        await prisma.transaction.create({
+          data: {
+            senderId: from,
+            receiverId: to,
+            amount,
+            status: 'FAILED',
+          },
+        });
       }
     }
 
     // Retourner les résultats
-    return { successfulUpdates, failedAccounts };
+    return { id, successfulUpdates, failedAccounts };
   },
 
   async createBankAccount(
